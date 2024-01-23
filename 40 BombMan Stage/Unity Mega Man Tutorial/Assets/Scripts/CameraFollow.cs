@@ -29,4 +29,31 @@ public class CameraFollow : MonoBehaviour
             transform.position = Vector3.Lerp(startPos, targetPos, t);
         }
     }
+
+    //this gizmo draws the bound box so it can be set on Scene without having to play the game to discover the values
+    void OnDrawGizmos()
+        {
+            // Calculate the original bounds size and center
+            Vector3 size = boundsMax - boundsMin;
+            Vector3 center = (boundsMax + boundsMin) / 2;
+    
+            // Extend the bounds to represent the camera's field of view
+            if (Camera.main != null)
+            {
+                // In 2D, the orthographic size is half the height of the camera view
+                float extraHeight = Camera.main.orthographicSize * 2;
+                float extraWidth = extraHeight * Camera.main.aspect;
+    
+                // Adjust the size to include the extra viewable area
+                Vector3 extendedSize = new Vector3(size.x + extraWidth, size.y + extraHeight, 0);
+    
+                // Draw the extended bounds
+                Gizmos.color = new Color(1f, 0.1f, 1f);
+                Gizmos.DrawWireCube(center, extendedSize);
+    
+                Handles.color = new Color(1f, 0.1f, 1f);
+                Vector3 labelPosition = center + new Vector3(0, extendedSize.y / 2 + 1, 0); // Adjust label position as needed
+                Handles.Label(labelPosition, "CameraBound");
+            }
+        }
 }
